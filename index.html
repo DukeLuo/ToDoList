@@ -5,22 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>To Do List</title>
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
   <div class="wrapper">
-    <div class="task-add"></div>
-      <input type="text" />
-      <input type="button" value="添加" />
-    <div class="tasks"></div>
-      <ul>
-        <section>
-          <input type="checkbox" >
-          <li class="task">item1</li>
-        </section>
+    <div class="task-add-wrapper">
+      <input type="text">
+      <input type="button" value="添加">
+    </div>
+    <div class="tasks-wrapper">
+      <ul class="task-list">
+        <li class="task-item">
+          <input type="checkbox">
+          <span class="task-content" >item1</span>
+          <span>delete</span>
+          <span>detail</span>
+        </li>
       </ul>
-    <div class="task-description"></div>
-
-
+    </div>
+    <div class="task-detail-wrapper">
+      <div class="content"></div>
+      <div class="description"></div>
+      <div class="reminder">
+        <input type="date">
+        <input type="button" value="summit">
+      </div>
+    </div>
   </div>
 
   <script type="text/javascript" src="lib/jquery-3.3.1.min.js"></script>
