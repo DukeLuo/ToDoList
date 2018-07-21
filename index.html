@@ -5,25 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>To Do List</title>
+  <link rel="stylesheet" href="lib/normalize.css">
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-  <div class="wrapper">
-    <div class="task-add-wrapper">
+  <div id="wrapper">
+    <div id="task-add-wrapper">
       <input type="text">
       <input type="button" value="添加">
     </div>
-    <div class="tasks-wrapper">
+    <div id="tasks-wrapper">
       <ul class="task-list">
         <li class="task-item">
           <input type="checkbox">
-          <span class="task-content" >item1</span>
-          <span>delete</span>
-          <span>detail</span>
+          <span class="task-content" ></span>
+          <span class="detail-item"></span>
+          <span class="delete-item"></span>
+        </li>
+        <li class="task-item">
+          <input type="checkbox">
+          <span class="task-content" ></span>
+          <span class="detail-item"></span>
+          <span class="delete-item"></span>
+        </li>
+        <li class="task-item">
+          <input type="checkbox">
+          <span class="task-content" ></span>
+          <span class="detail-item"></span>
+          <span class="delete-item"></span>
+        </li>
+        <li class="task-item">
+          <input type="checkbox">
+          <span class="task-content" ></span>
+          <span class="detail-item"></span>
+          <span class="delete-item"></span>
         </li>
       </ul>
     </div>
-    <div class="task-detail-wrapper">
+    <div id="task-detail-wrapper">
       <div class="content"></div>
       <div class="description"></div>
       <div class="reminder">
