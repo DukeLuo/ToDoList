@@ -14,6 +14,7 @@ input[type="button"],
 input[type="date"] {
   border: none;
   padding: 0;
+  outline: none;
 }
 
 #task-add-wrapper {
@@ -80,7 +81,6 @@ ul.task-list {
   float: left;
   height: 100%;
   margin-right: 8px;
-  outline: none;
 }
 
 .task-item .detail-item,
