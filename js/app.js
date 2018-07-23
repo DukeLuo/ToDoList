@@ -8,9 +8,11 @@
     function initTaskLocalStorage() {
         var data = [];
 
+        // console.log(getTaskLocalStorage());
         if (!getTaskLocalStorage()) {
             data = JSON.stringify(data);
             localStorage.setItem(KEY, data);
+            // console.log(getTaskLocalStorage());
         }
     }
 
@@ -28,12 +30,13 @@
     }
 
     // 添加task并加入至localStorage
-    function addTaskStorage(content, description, date) {
+    function addTaskStorage(content, done, description, date) {
         var localData = getTaskLocalStorage();
 
+        // console.log(localData);
         localData.push({});
         localStorage.setItem(KEY, JSON.stringify(localData));
-        return updateTaskStorage(localData.length-1, content, description, date);
+        return updateTaskStorage(localData.length-1, content, done, description, date);
     }
 
     // 根据索引删除localStorage中的task
@@ -44,21 +47,25 @@
         localStorage.setItem(KEY, JSON.stringify(localData));
     }
 
-    // 更新localStorage中的task
-    function updateTaskStorage(taskIndex, content, description, date) {
+    // 根据索引更新localStorage中的task
+    // 更新参数中设置的非null项
+    function updateTaskStorage(taskIndex, content, done, description, date) {
         var task = queryTask(taskIndex),
             localData = getTaskLocalStorage();
 
         if (!task) {
             return ;
         }
-        if (content) {
+        if (content !== null) {
             task.content = content;
         }
-        if (description) {
+        if (done !== null) {
+            task.done = done;
+        }
+        if (description !== null) {
             task.description = description;
         }
-        if (date) {
+        if (date !== null) {
             task.date = date;
         }
         localData[taskIndex] = task;
@@ -100,10 +107,14 @@
     });
 
     function renderNewTaskHandler() {
-        var d = getAddInputValue();
-        if (JSON.stringify(d) !== "{}") {
+        var val = getAddInputValue(),
+            d = {};
+
+        if (val) {
+            d.content = val;
+            d.done = false;
             renderTask(d);
-            addTaskStorage(d["content"]);
+            addTaskStorage(d["content"], d["done"], null, null);
             $taskAddInput.val("");
         }
     }
@@ -115,18 +126,21 @@
                         '<span class="delete-item"></span>' +
                         '<span class="detail-item"></span>' +
                       '</li>';
+        var $task = $(taskTpl),
+            $checkbox = $task.find("input[type='checkbox']");
 
-        $taskList.append(taskTpl);
+        $checkbox.attr("checked", d.done);
+        if (d.done) {
+            $task.addClass("deleted-task-item");
+        }
+        // to do
+        $taskList.append($task);
     }
 
     function getAddInputValue() {
-        var val = $taskAddInput.val(),
-            d = {};
+        var val = $taskAddInput.val();
 
-        if (val) {
-            d["content"] = val;
-        }
-        return d;
+        return val ? val : null;
     }
 
     // 监听删除task事件
@@ -140,4 +154,17 @@
         deleteTaskStorage(index);
     });
 
+    // 监听标记task事件
+    $taskList.on("click", "input[type='checkbox']", function (event) {
+        var $p = $(this).parent(),
+            index = $p.index();
+
+        if ($(this).is(":checked")) {
+            $p.addClass("deleted-task-item");
+            updateTaskStorage(index, null, true, null, null);
+        } else {
+            $p.removeClass("deleted-task-item");
+            updateTaskStorage(index, null, false, null, null);
+        }
+    });
 })();

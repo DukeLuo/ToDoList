@@ -14,7 +14,6 @@ input[type="button"],
 input[type="date"] {
   border: none;
   padding: 0;
-  outline: none;
 }
 
 #task-add-wrapper {
@@ -43,6 +42,7 @@ input[type="date"] {
   background-color: #40835e;
   color: #fffffb;
   font-size: 20px;
+  outline: none;
 }
 
 #task-add-wrapper input[type="button"]:hover {
@@ -59,7 +59,7 @@ ul.task-list {
   padding: 0;
 }
 
-.task-list li {
+.task-item {
   list-style: none;
   height: 36px;
   padding-left: 8px;
@@ -68,7 +68,7 @@ ul.task-list {
   border-radius: 4px;
 }
 
-.task-list li:hover {
+.task-item:hover {
   background-color: #fffffb;
   box-shadow: 2px 2px 8px #333;
 }
@@ -81,6 +81,7 @@ ul.task-list {
   float: left;
   height: 100%;
   margin-right: 8px;
+  outline: none;
 }
 
 .task-item .detail-item,
@@ -111,8 +112,14 @@ ul.task-list {
   height: 36px;
   max-width: 85%;
   line-height: 36px;
+  text-decoration: inherit;
 }
 
+.deleted-task-item {
+  opacity: 0.5;
+  background-color: #aaa;
+  text-decoration: line-through;
+}
 
 #task-detail-wrapper {
 
