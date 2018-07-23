@@ -8,11 +8,9 @@
     function initTaskLocalStorage() {
         var data = [];
 
-        // console.log(getTaskLocalStorage());
         if (!getTaskLocalStorage()) {
             data = JSON.stringify(data);
             localStorage.setItem(KEY, data);
-            // console.log(getTaskLocalStorage());
         }
     }
 
@@ -33,7 +31,6 @@
     function addTaskStorage(content, done, description, date) {
         var localData = getTaskLocalStorage();
 
-        // console.log(localData);
         localData.push({});
         localStorage.setItem(KEY, JSON.stringify(localData));
         return updateTaskStorage(localData.length-1, content, done, description, date);
@@ -69,6 +66,26 @@
             task.date = date;
         }
         localData[taskIndex] = task;
+        localStorage.setItem(KEY, JSON.stringify(localData));
+    }
+
+    // 依次按照选定标记，定时日期对localStorage排序
+    function sortTaskStorage() {
+        var localData = getTaskLocalStorage();
+
+        localData.sort(function (t1, t2) {
+            if (t1.done > t2.done) {
+                return 1;
+            } else if (t1.done < t2.done) {
+                return -1;
+            } else if (t1.date > t2.date) {
+                return 1;
+            } else if (t1.date < t2.date) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
         localStorage.setItem(KEY, JSON.stringify(localData));
     }
 
@@ -113,15 +130,17 @@
         if (val) {
             d.content = val;
             d.done = false;
+            d.description = "";
+            d.date = Date.now() + 1000 * 60 * 60 * 2;   //默认两小时后
             renderTask(d);
-            addTaskStorage(d["content"], d["done"], null, null);
+            addTaskStorage(d["content"], d["done"], d["description"], d["date"]);
             $taskAddInput.val("");
         }
     }
 
     function renderTask(d) {
         var taskTpl = '<li class="task-item">' +
-                        '<input type="checkbox">' +
+                        '<input type="checkbox" id="check">' +
                         '<span class="task-content" >' + d.content + '</span>' +
                         '<span class="delete-item"></span>' +
                         '<span class="detail-item"></span>' +
@@ -160,11 +179,19 @@
             index = $p.index();
 
         if ($(this).is(":checked")) {
-            $p.addClass("deleted-task-item");
             updateTaskStorage(index, null, true, null, null);
         } else {
-            $p.removeClass("deleted-task-item");
             updateTaskStorage(index, null, false, null, null);
         }
+        sortTaskStorage();
+        $taskList.empty();
+        storageTasksRender();
     });
+    // 优化标记体验
+    $taskList.on("click", ".task-content", function (event) {
+        var $checkbox = $(this).siblings("input");
+
+        $checkbox.trigger("click");
+    });
+
 })();
