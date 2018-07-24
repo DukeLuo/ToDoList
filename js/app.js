@@ -93,7 +93,8 @@
     // 程序主体逻辑部分
     var $taskAddInput = $("#task-add-wrapper input[type='text']"),
         $taskAddSubmit = $("#task-add-wrapper input[type='button']"),
-        $taskList = $("ul.task-list");
+        $taskList = $("ul.task-list"),
+        $taskDetailWrapper = $("#task-detail-wrapper");
 
     initTaskLocalStorage();
     storageTasksRender();
@@ -193,5 +194,53 @@
 
         $checkbox.trigger("click");
     });
+
+    //
+
+    $taskList.on("click", ".detail-item", function (event) {
+        var $p = $(this).parent(),
+            index = $p.index(),
+            d = queryTask(index);
+
+        $taskDetailWrapper.empty();
+        renderDetail(d, index);
+    });
+    $.datetimepicker.setLocale('ch');
+
+    function renderDetail(d, taskIndex) {
+        var detailTpl = '<div class="detail">' +
+                          '<div class="content">' + d.content + '</div>' +
+                          '<div class="description">' +
+                            '<h4>日程详情:</h4>' +
+                            '<textarea name="description"></textarea>' +
+                          '</div>' +
+                          '<div class="reminder">' +
+                            '<h4>提醒时间:</h4>' +
+                            '<input type="text" value="' + d.date + '" class="date">' +
+                          '</div>' +
+                          '<input type="button" value="更新">' +
+                        '</div>';
+        var $detail = $(detailTpl),
+            $date = $detail.find(".date"),
+            $description = $detail.find("textarea"),
+            $date = $detail.find('input[type="text"]'),
+            $updateBtn = $detail.find('input[type="button"]');
+
+        $description.val(d.description);
+        if (!d.done) {
+            $date.datetimepicker();
+            $updateBtn.click(function () {
+                updateTaskStorage(taskIndex, null, null, $description.val(), $date.val());
+                // console.log(queryTask(taskIndex));
+                $taskDetailWrapper.empty();
+            });
+        }
+        if (d.done) {
+            $description.attr("readonly", true);
+            $date.attr("readonly", true);
+            $updateBtn.remove();
+        }
+        $taskDetailWrapper.append($detail);
+    }
 
 })();
