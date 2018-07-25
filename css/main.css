@@ -123,6 +123,7 @@ ul.task-list {
 
 #task-detail-wrapper {
   position: absolute;
+  /* position: relative; */
   width: 300px;
   border-radius: 40px 80px;
   background-color: #f2eada;
@@ -130,6 +131,7 @@ ul.task-list {
 }
 
 #task-detail-wrapper .detail {
+  /* position: absolute; */
   padding: 30px 28px;
 }
 

@@ -99,6 +99,7 @@
     initTaskLocalStorage();
     storageTasksRender();
 
+    // 根据localStorage中task渲染
     function storageTasksRender() {
         var localData = getTaskLocalStorage(),
             i;
@@ -110,6 +111,7 @@
             renderTask(localData[i]);
         }
     }
+
 
     // 监听新建task事件
     $taskAddSubmit.click(function (event) {
@@ -133,7 +135,7 @@
             d.content = val;
             d.done = false;
             d.description = "";
-            d.date = Date.now() + 1000 * 60 * 60 * 2;   //默认两小时后
+            d.date = Date.now() + 2 * 60 * 60 * 1000;  //默认两小时后
             renderTask(d);
             addTaskStorage(d["content"], d["done"], d["description"], d["date"]);
             $taskAddInput.val("");
@@ -164,6 +166,7 @@
         return val ? val : null;
     }
 
+
     // 监听删除task事件
     $taskList.on("click", ".delete-item", function (event) {
         var $p = $(this).parent(),
@@ -174,6 +177,7 @@
         });
         deleteTaskStorage(index);
     });
+
 
     // 监听标记task事件
     $taskList.on("click", "input[type='checkbox']", function (event) {
@@ -196,6 +200,7 @@
 
         $checkbox.trigger("click");
     });
+
 
     // 监听点击task详情
     $taskList.on("click", ".detail-item", function (event) {
@@ -225,7 +230,7 @@
                           '</div>' +
                           '<div class="reminder">' +
                             '<h4>提醒时间:</h4>' +
-                            '<input type="text" value="' + d.date + '" class="date">' +
+                            '<input type="text" value="' + millisecondToDatestr(d.date+28800000) + '" class="date">' +
                           '</div>' +
                           '<input type="button" value="更新">' +
                         '</div>';
@@ -239,23 +244,64 @@
         if (!d.done) {
             $date.datetimepicker();
             $updateBtn.click(function (event) {
+                var t = datestrToMillisecond($date.val())-28800000;
+
                 event.stopPropagation();
-                updateTaskStorage(taskIndex, null, null, $description.val(), $date.val());
+                if (t < Date.now()) {
+                    t = d.date;
+                }
+                updateTaskStorage(taskIndex, null, null, $description.val(), t);
                 $taskDetailWrapper.empty();
             });
-        }
-        if (d.done) {
+        } else {
             $description.attr("readonly", true);
             $date.attr("readonly", true);
             $updateBtn.remove();
         }
         $taskDetailWrapper.append($detail);
     }
-    
+
+    // 将形如2018/07/25 04:00表示时间的字符串转化为UTC下的毫秒表示
+    function datestrToMillisecond(str) {
+        var n;
+
+        if (!str) {
+            return ;
+        }
+        str = str.replace(" ", "/");
+        str = str.replace(":", "/");
+        str = str.split("/");
+        n = Date.UTC(+str[0], +str[1]-1, +str[2], +str[3], +str[4]);
+        return n;
+    }
+
+    // 将UTC下的毫秒表示转化为形如2018/07/25 04:00字符串表示
+    function millisecondToDatestr(n) {
+      var str = "",
+          d = new Date(n);
+
+      if (isNaN(n) || +n < 0) {
+          return ;
+      }
+      str += d.getUTCFullYear() + "/";
+      str += (d.getUTCMonth()+1 < 9 ? "0"+(d.getUTCMonth()+1) : d.getUTCMonth()+1) + "/";
+      str += d.getUTCDate() + " ";
+      str += (d.getUTCHours() < 9 ? "0"+d.getUTCHours() : d.getUTCHours()) + ":";
+      str += d.getUTCMinutes() < 9 ? "0"+d.getUTCMinutes() : d.getUTCMinutes();
+      return str;
+    }
+
+
     // 监听点击空白区域事件，关闭详情弹层
     $(document).click(function (event) {
+        if ($taskDetailWrapper.has('input[type="button"]').length === 1) {
+            return ;
+        }
         $taskDetailWrapper.empty();
     });
+    $(window).resize(function (event) {
+        $taskDetailWrapper.empty();
+    })
     // 阻止点击详情弹层关闭弹层
     $taskDetailWrapper.click(function (event) {
         event.stopPropagation();
