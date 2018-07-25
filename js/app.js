@@ -113,6 +113,7 @@
 
     // 监听新建task事件
     $taskAddSubmit.click(function (event) {
+        event.stopPropagation();
         renderNewTaskHandler();
     });
     $taskAddInput.keyup(function (event) {
@@ -190,21 +191,29 @@
     });
     // 优化标记体验
     $taskList.on("click", ".task-content", function (event) {
+        event.stopPropagation();
         var $checkbox = $(this).siblings("input");
 
         $checkbox.trigger("click");
     });
 
-    //
-
+    // 监听点击task详情
     $taskList.on("click", ".detail-item", function (event) {
+        event.stopPropagation();
         var $p = $(this).parent(),
             index = $p.index(),
             d = queryTask(index);
 
         $taskDetailWrapper.empty();
+        $taskDetailWrapper.css("top", function () {
+            return event.pageY - 30 + "px";
+        });
+        $taskDetailWrapper.css("left", function () {
+            return event.pageX - 100 + "px";
+        });
         renderDetail(d, index);
     });
+    // 设置日期插件语言
     $.datetimepicker.setLocale('ch');
 
     function renderDetail(d, taskIndex) {
@@ -229,9 +238,9 @@
         $description.val(d.description);
         if (!d.done) {
             $date.datetimepicker();
-            $updateBtn.click(function () {
+            $updateBtn.click(function (event) {
+                event.stopPropagation();
                 updateTaskStorage(taskIndex, null, null, $description.val(), $date.val());
-                // console.log(queryTask(taskIndex));
                 $taskDetailWrapper.empty();
             });
         }
@@ -242,5 +251,14 @@
         }
         $taskDetailWrapper.append($detail);
     }
+    
+    // 监听点击空白区域事件，关闭详情弹层
+    $(document).click(function (event) {
+        $taskDetailWrapper.empty();
+    });
+    // 阻止点击详情弹层关闭弹层
+    $taskDetailWrapper.click(function (event) {
+        event.stopPropagation();
+    });
 
 })();
