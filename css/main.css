@@ -211,7 +211,6 @@ ul.noti-list {
 }
 
 #task-notification-wrapper {
-  display: none;
   position: absolute;
   top: 0;
   left: calc(50% - 350px);
@@ -231,7 +230,7 @@ ul.noti-list {
 }
 
 .noti-list li + li {
-  border-top: 10px #feeeed solid;
+  border-top: 2px #feeeed solid;
 }
 
 .noti-item .noti-content {

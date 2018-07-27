@@ -94,10 +94,14 @@
     var $taskAddInput = $("#task-add-wrapper input[type='text']"),
         $taskAddSubmit = $("#task-add-wrapper input[type='button']"),
         $taskList = $("ul.task-list"),
-        $taskDetailWrapper = $("#task-detail-wrapper");
+        $taskDetailWrapper = $("#task-detail-wrapper"),
+        $notiList = $("ul.noti-list"),
+        $notiWrapper = $("task-notification-wrapper"),
+        notiAlert = $(".noti-alert")[0];
 
     initTaskLocalStorage();
     storageTasksRender();
+    initDateChecker();
 
     // 根据localStorage中task渲染
     function storageTasksRender() {
@@ -156,7 +160,6 @@
         if (d.done) {
             $task.addClass("deleted-task-item");
         }
-        // to do
         $taskList.append($task);
     }
 
@@ -307,4 +310,48 @@
         event.stopPropagation();
     });
 
+
+    // 定时提醒部分
+    // 初始化定时器，每200ms执行一次
+    function initDateChecker() {
+        setInterval(dateChecker, 200);
+    }
+
+    function dateChecker() {
+        var tasks = getTaskLocalStorage(),
+            curr,
+            i;
+
+        for (i = 0; i < tasks.length; i++) {
+            if (tasks[i].done) {
+                continue;
+            }
+            curr = Date.now();
+            if (Math.abs(curr - tasks[i].date) < 10000 && $notiList.find("#"+tasks[i].date).length === 0) {
+                notiAlert.play();
+                renderNotiItem(tasks[i], i);
+            }
+        }
+    }
+
+    function renderNotiItem(d, taskIndex) {
+        var notiItemTpl = '<li class="noti-item" id="' + d.date + '">' +    // 使用时间戳作为id
+                            '<span class="noti-content">' + d.content + '</span>' +
+                            '<input type="button" value="确认">' +
+                          '</li>';
+        var $notiItem = $(notiItemTpl),
+            $confirmBtn = $notiItem.find('input[type="button"]');
+
+        if (d.done) {
+            return ;
+        }
+        $confirmBtn.click(function () {
+            updateTaskStorage(taskIndex, null, true, null, null);
+            sortTaskStorage();
+            $taskList.empty();
+            storageTasksRender();
+            $(this).parent().remove();
+        });
+        $notiList.append($notiItem);
+    }
 })();
