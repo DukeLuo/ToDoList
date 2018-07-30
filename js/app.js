@@ -171,15 +171,49 @@
 
 
     // 监听删除task事件
-    $taskList.on("click", ".delete-item", function (event) {
-        var $p = $(this).parent(),
-            index = $p.index();
+    // 单击删除所选task，双击删除所有已标记的task
+    // 此处使用setTimeout统计单击次数以模拟双击，避免双击时触发单击删除task
+    var DELAY = 700,
+        clicks = 0,
+        timer = null;
 
-        $p.fadeOut(300, function () {
+    $taskList.on("click", ".delete-item", function (event) {
+        var $p = $(this).parent();
+
+        clicks++;
+        if (clicks === 1) {
+            timer = setTimeout(function () {
+                singleClickHandler($p);
+                clicks = 0;
+            }, DELAY);
+        } else {
+            clearTimeout(timer);
+            doubleClickHandler($p);
+            clicks = 0;
+        }
+    });
+    $taskList.on("dblclick", ".delete-item", function (event) {
+        event.preventDefault();
+    });
+
+    function singleClickHandler($taskItem) {
+        $taskItem.fadeOut(300, function () {
             $(this).remove();
         });
-        deleteTaskStorage(index);
-    });
+        deleteTaskStorage($taskItem.index());
+    }
+
+    function doubleClickHandler($taskItem) {
+        var $checkedTask = $taskList.children().filter(".deleted-task-item");
+
+        if (!$taskItem.hasClass("deleted-task-item")) {
+            return ;
+        }
+        $checkedTask.each(function (index, item) {
+            $(item).remove();
+            deleteTaskStorage($(item).index());
+        });
+    }
 
 
     // 监听标记task事件

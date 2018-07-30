@@ -246,14 +246,3 @@ ul.noti-list {
 #task-notification-wrapper input[type="button"]:hover {
   box-shadow: 0 0 4px #111;
 }
-
-#delete-all {
-  display: none;
-  width: 48px;
-  height: 48px;
-  border-radius: 24px;
-  background-image: url("../image/delete-all.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  box-shadow: 0 0 10px #333;
-}
